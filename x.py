@@ -1,7 +1,8 @@
 #from vectors import *
 #from matrices import *
 #from path import *
-from robot2 import Robot2
+import random
+from robot2 import Robot
 
 def prn(l):
 	print
@@ -9,48 +10,85 @@ def prn(l):
 		print i
 
 def prinb(brd,po=[0,0]):
+	size = [len(brd),len(brd[0])]
 	print '  ',
-	for i in range(15):
+	for i in range(size[0]):
 		print str(i).zfill(2)[0].replace('0',' ') + str(i)[-1],
 	print '\n'+'-'*48
-	for i in range(15):
+	for i in range(size[0]):
 		print str(i).zfill(2) + '|',
-		for j in range(15):
+		for j in range(size[1]):
 			ch = '.'
 			if [i,j] == po:
 				ch = '$'
-			print str(brd[i][j]).replace('0',' ').replace('2',ch).replace('1','0')+ ' ',
+			print str(brd[j][i]).replace('0',' ').replace('2',ch).replace('1','0')+ ' ',
 		print
 
 def draw(brd, pth):
 	for i in pth:
 		brd[i[0]][i[1]] = 2
 
+'''
 pnts = [[0,1], [1, 1], [2, 0], [2, 3], [3, 2], 
 		[3, 3], [3, 4], [5, 6], [6, 5], [6, 6], 
 		[6, 7], [7, 6], [8, 6], [9, 3], [9, 4], 
-		[9, 5], [9, 6],[10,9],[9,10],[10,10]]
+		[9, 5], [9, 6],[10,9],[9,10],[10,10],[23,23],[24,24],[26,28],[4,8],[4,9],[4,10],[5,10]]
+'''
+
+pnts = [[1 if random.gauss(0,1) > 1.5 else 0 for i in range(30)] for j in range(30)]
+for i in range(4):
+	for j in range(4):
+		pnts[i][j] = 0
+
+prinb(pnts)
 
 def IR(r):
-	toret = []
 	for i in range(-2,3):
 		for j in range(-2,3):
 			ps = r.position
 			x,y = ps[0]+i,ps[1]+j
 			if x<0 or x>29 or y<0 or y>29: continue
-			toret.append([x,y,int([x,y] in pnts)])
-	print 'how about this...?'
-#	print toret
-	return toret
+			yield [x,y,int(pnts[x][y] == 1)]
 
 boar = [[0 for i in range(30)] for j in range(30)]
-r = Robot2(brd=boar,dat_func=IR,start=[0,0],goal=[29,29],max_dim=[30,30])
+r = Robot(brd=boar,dat_func=IR,start=[0,0],goal=[29,14],max_dim=[30,15])
 for i in pnts: r.add_obstacle(i)
-while r.position != [29,29]:
+while r.position != [29,14]:
 	draw(boar,r.step())
 	prinb(boar,po=r.position)
 	raw_input('')
 '''
+boar = [
+[a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]
+[a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[1,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,1,1,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,1,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,1,1,1,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,1,1,1,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,1,a,1,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,1,a,a,1,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a,a]]
 board = [
 [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
 [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0],

@@ -1,6 +1,7 @@
 class PathSolver:
 	def __init__(self):
-		pass
+		self.ans = None
+
 	def pathfind(self,pth, fr):
 		if isinstance(pth[fr[0]][fr[1]], list) and fr is not None:
 			return self.pathfind(pth,pth[fr[0]][fr[1]]) + [fr]

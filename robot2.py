@@ -1,11 +1,11 @@
 import vectors, matrices
 from path import PathSolver
 
-class Robot2:
+class Robot:
 	def __init__(self,brd,dat_func,start,goal,max_dim):
 		self.get_data = dat_func
 		self.obst = []
-		self.board = brd
+		self.board = brd[:]
 		self.dim = (len(self.board),len(self.board[0]))
 		self.DIM = max_dim
 		self.position = start
@@ -37,10 +37,11 @@ class Robot2:
 		self.update(self.new)
 		self.weigh(old,self.new)
 		soln = self.find_path()
-		if soln is not None:
-			self.position = self.find_path()[1]
+		if soln is not None and len(soln) > 1:
+			self.position = soln[1]
 			self.track.append(self.position)
-		return self.track
+		if self.track:	return self.track[-1]
+		return self.position
 
 	def update(self,brd):
 		for i in self.get_data(self):
