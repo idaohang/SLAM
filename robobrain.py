@@ -5,14 +5,21 @@ class Obstacle:
 		self.recorded_at = [pos]
 		self.recorded_from = [from]
 		self.position = vectors.add(vector(from),vectors.neg(vector(pos)))
+		self.relative = ()
 
 	def add_data(self,pos,from):
 		self.recorded_at.append(pos)
 		self.recorded_from.append(from)
-		self.filter()
 
 	def filter(self):
 		return
+
+class Obstacles:
+	def __init__():
+		self.obsts = []
+
+	def order(position):
+		self.obsts.sort(key=lambda obst: dist(obst.position)
 
 class Robot:
 	def __init__(self,start,goal,size,granularity):
@@ -27,5 +34,5 @@ class Robot:
 		self.obstacles = []
 
 	def add_world_data(data,delta):
-		data = vector_adjust(data,delta)
-		for 
+		self.vector_adjust(data,delta)
+		self.order(data)

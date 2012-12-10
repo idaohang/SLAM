@@ -1,19 +1,20 @@
+def basic(self,a,b):
+	return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+def dist_score(self,a,b):
+	dx, dy = abs(a[0]-b[0]), abs(a[1]-b[1])
+	mi,ma = (dx,dy) if dx < dy else (dy,dx)
+	return (2*mi*mi)**.5 + (ma-mi)
+
 class PathSolver:
-	def __init__(self):
+	def __init__(self,scr = dist_score):
 		self.ans = None
+		self.score = scr
 
 	def pathfind(self,pth, fr):
 		if isinstance(pth[fr[0]][fr[1]], list) and fr is not None:
 			return self.pathfind(pth,pth[fr[0]][fr[1]]) + [fr]
 		return fr[2:]
-
-	def basic(self,a,b):
-		return abs(a[0]-b[0]) + abs(a[1]-b[1])
-
-	def score(self,a,b):
-		dx, dy = abs(a[0]-b[0]), abs(a[1]-b[1])
-		mi,ma = (dx,dy) if dx < dy else (dy,dx)
-		return (2*mi*mi)**.5 + (ma-mi)
 
 	def As(self,start, goal, board):
 		def rank(x):
