@@ -23,6 +23,8 @@ class vector:
 		return (self.x**2 + self.y**2)**.5
 
 	def angle(self):
+		if self.x == 0:
+			return 180*(self.y > 0) + 90
 		ang = math.atan(self.y/self.x)
 		if self.x < 0:
 			if self.y < 0:
@@ -64,7 +66,7 @@ def unit(a):
 def scale(a,v):
 	if v.x is not None:
 		return vector([a*v.x,a*v.y],None)
-	return vector(None,[2*v.r, v.t])
+	return vector(None,[a*v.r, v.t])
 
 def project(a,b):
 	return scale(dot(a,unit(b)),unit(b))
