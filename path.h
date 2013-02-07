@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "llist.h"
 
 #define ABS(x) x>0?x:-x
 #define MIN(x,y) x>y?y:x
@@ -8,14 +9,18 @@ typedef struct {
 	int x,y;
 } node;
 
-int SIZE_ERROR = 1;
+typedef struct {
+	int g_score, f_score, val;
+	node from;
+} score_info;
+
 
 int manhattan(node a, node b)
 {
 	return 2*(ABS(a.x-b.x) + ABS(a.y-b.y));
 }
 
-int pythag(node a, node b);
+int pythag(node a, node b)
 {
 	int dx = ABS(a.x - b.x);
 	int dy = ABS(a.y - b.y);
@@ -41,6 +46,6 @@ int pythag(node a, node b);
 }
 
 
-void init_finder(int** world_board);
-
-void solve_path(void* func);
+int init_finder(int** world_board);
+void a_star();
+int retrace(lnode* path, score_info** board, node *start, node *goal);

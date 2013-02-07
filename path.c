@@ -1,7 +1,9 @@
+#include <stdlib.h>
 #include "path.h"
 
-int** board, g_score, f_score;
-void** path;
+score_info** board;
+node* path;
+void* score = manhattan;
 
 int init_finder(int** world_board)
 {
@@ -9,39 +11,51 @@ int init_finder(int** world_board)
 	int size_x = sizeof(world_board)/sizeof(int *);
 	int size_y = sizeof(world_board[0])/sizeof(int);
 
-	g_score = malloc(sizeof(int *) * size_x);
-	for (i = 0; i < size_x; i++)
-	{
-		g_score[i] = malloc(sizeof(int) * size_y);
-		for (j = 0; j < size_y; j++)
-			g_score[i][j] = 0;
-	}
-
-	f_score = malloc(sizeof(int *) * size_x);
+	board = malloc(sizeof(score_info *) * size_x);
 	for (i = 0; i < size_y; i++)
 	{
-		f_score[i] = malloc(sizeof(int) * size_y);
+		board[i] = malloc(sizeof(score_info) * size_y);
 		for (j = 0; j < size_y; j++)
-			f_score[i][j] = 0;
+		{
+			score_info sc;
+			sc.g_score = 0;
+			sc.f_score = 0;
+			sc.val = world_board[i][j];
+			board[i][j] = sc;
+		}
 	}
 
-	board = malloc(sizeof(int *) * size_x);
-	for (i = 0; i < size_y; i++)
+	path = malloc(sizeof(node *) * size_x);
+} 
+
+int retrace(lnode *path, score_info** board, node *start, node *goal)
+{
+	int length = 0;
+	init_list(&path);
+	node *sel = &board[goal->x][goal->y].from;
+
+	while (!(sel == start))
 	{
-		board[i] = malloc(sizeof(int) * size_y);
-		for (j = 0; j < size_y; j++)
-			board[i][j] = world_board[i][j];
+		length++;
+		node *link = malloc(sizeof(node*));
+		*link = *sel;
+		append(path,link);
+		sel = &board[sel->x][sel->y].from;
 	}
 
-	node = malloc(sizeof(node *) * size_x);
-	for (i = 0; i < size_x; i++)
-		node[i] = malloc(sizeof(node) * size_y);
+	return length;
 }
 
-node* pathfind(int length, node from)
+void a_star()
 {
-	if (sizeof(from) != sizeof(node))
-	{
-		return 
-	}
+}
+
+int main(void)
+{
+	int i = 0;
+	int** brd = malloc(4*sizeof(int *));
+	for (i = 0; i < 4; i++)
+		brd[i] = malloc(4*sizeof(int));
+	init_finder(brd);
+	return 0;
 }
