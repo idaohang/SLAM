@@ -2,84 +2,69 @@
 #include <stdio.h>
 #include "llist.h"
 
-const lnode NULLED = {NULL, NULL};
+lnode NULLED = {NULL, NULL};
 
-void init_list(void * head)
-{
-	*(lnode*)head = NULLED;
-}
+void init_list(lnode **head)
+{ *head = &NULLED; }
 
-void add_head(lnode **head, void *data)
+void prepend(lnode **head, void *data)
 {
+	if (!data) fprintf(stderr, "Warning: null data pointer.");
 	lnode *add = malloc(sizeof(lnode));
+	lnode *nhead = *head;
 	add->data = data;
-	add->next = *head;
-	*head = add;
+	add->next = nhead->next;
+	nhead->next = add;
+	nhead->data = NULL;
+	*head = nhead;
 }
 
-void add_tail(lnode* head, lnode *add)
+void append(lnode *head, void *data)
 {
-	lnode last = *head;
-	while(get_next(&last, &last) == 0);
-	printf("%p\n",&last);
+	if (!data) fprintf(stderr, "Warning: null data pointer.");
+	lnode *last = &(*head);
+	while(get_next(last, &last) == 0);
+	lnode *add = malloc(sizeof(lnode*));
+	add->data = data;
+	add->next = NULL;
+	last->next = add;
 }
 
-int get_next(lnode head, lnode *target)
+int get_next(lnode *head, lnode **target)
 {
-	if (head.next == NULL) return 1;
-	lnode next = *(head.next);
-	*target = next;
+	if (head->next == NULL) return 1;
+	*target = head->next;
 	return 0;
 }
 
 int main(void)
 {
-	/*lnode fir, sec, nsec;
-	fir = NULLED;
-	sec = NULLED;
-	nsec = NULLED;
-	llist head;
-	int a = 2;
-	fir.data = &a;
-	printf("%p\n",fir.next);
-	printf("head: %d vs. %d\n",a, *(int*)fir.data);
-	double b = 1;
-	sec.data = &b;
-	add_head(&fir,&sec);
-	head = &sec;
-	printf("nhead: %f vs. %f\n",b, *(double*)head->data);
-	nsec = *head->next;
-	get_next(head, &nsec);
-	printf("nsec: %d vs. %d\n",a, *(int*)nsec.data);
-	int x = get_next(&nsec, &fir);
-	printf("x: %d\n",x);
-	printf("%d\n",*(int*)fir.data);*/
+	int i, a = 50;
 
-	lnode* head;
-	int i,a = 50;
-
+	lnode *head;
 	init_list(&head);
-	add_head(&head, &a);
 
 	for(i = 9; i >= 0; i--)
 	{
 		int* x = malloc(sizeof(int));
 		*x = i;
-		add_head(&head,x);
+		prepend(&head,x);
 	}
 
-	add_head(&head,NULL);
+	printf("%p\n",head);
 
-	lnode curr = *head;
-	while(get_next(curr, &curr) == 0)
-		printf("%d\n", *(int*)curr.data);
-	/*
-	lnode curr = *(head->next);
-	for(i = 0; i < 15; i++)
+	for(i = 0; i < 10; i++)
 	{
-		printf("%d\n",*(int*)curr.data);
-		if (get_next(curr, &curr) != 0) break;
+		int*x = malloc(sizeof(int));
+		*x = i;
+		append(head,x);
 	}
+
+	lnode *curr = head;
+	lnode *change = curr->next->next->next;
+	change->data = &a;
+	while(get_next(curr, &curr) == 0)
+		printf("%d %p\n", *(int*)curr->data, curr);
 	/**/
 	return 0;
 }
