@@ -42,10 +42,10 @@ int append(lnode *head, void *data)
 }
 
 int delete_node(lnode *del)
-{ *del = *del->next; }
-
-int delete_next(lnode *prev)
-{ *prev->next = *prev->next->next; }
+{
+	free(del->data);
+	*del = *del->next;
+}
 
 int get_next(lnode *head, lnode **target)
 {
@@ -84,8 +84,8 @@ int main(void)
 	change->data = &a;
 	while(get_next(curr, &curr) == 0)
 	{
-		if (*(int*)curr->data == 6) delete_next(curr);
-		if (*(int*)curr->data == 3) delete_node(head,curr);
+		if (*(int*)curr->data == 6) delete_node(curr->next);
+		if (*(int*)curr->data == 3) delete_node(curr);
 		printf("%d %p\n", *(int*)curr->data, curr);
 	}
 	return 0;

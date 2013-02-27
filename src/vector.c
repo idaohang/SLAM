@@ -2,15 +2,15 @@
 const int sinlu[] = {0,3211,6392,9511,12539,15446,18204,20787,
 			23169,25329,27244,28897,30272,31356,32137,32609,32767};
 const int atanlu[] = {};
+typedef struct {int x,y;} vector_xy;
 typedef struct
 {
 	unsigned short mag;
 	int ang;
 } vector;
 
-typedef struct {int x,y;} vector_xy;
 
-int sin(int x)
+int sin_16(int x)
 {
 	if (x < 0) x += 360;
 	int sign = 1;
@@ -26,7 +26,7 @@ int sin(int x)
 		sinlu[index + 1] * (x*16 - (index)*90))/90;
 }
 
-int cos(int x) {return sin(90 - x);}
+int cos_16(int x) {return sin_16(90 - x);}
 
 void negate(vector source, vector* dest)
 {
@@ -35,6 +35,12 @@ void negate(vector source, vector* dest)
 	dest->ang = ((ang<180)?ang+180:ang-180);
 }
 
+void v_conv_to(vector src, vector_xy* dest)
+{
+	dest->x = (int)(src.mag * sin_16(src.ang)) >> 15;
+	dest->y = (int)(src.mag * cos_16(src.ang)) >> 15;
+}
+/*
 int main(void)
 {
 	vector a = (vector){32767,30};
@@ -48,8 +54,4 @@ int main(void)
 	printf("%i %i\n",c.x,c.y);
 }
 
-void v_conv_to(vector src, vector_xy* dest)
-{
-	dest->x = (src.mag * sin(src.ang)) >> 15;
-	dest->y = (src.mag * cos(src.ang)) >> 15;
-}
+*/

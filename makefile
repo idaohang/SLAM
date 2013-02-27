@@ -1,14 +1,15 @@
-main: path.o llist.o
-	gcc -o main path.o llist.o
+SRC = ./src
+BUILD = ./build
+INC = ./inc
 
-path.o: path.c path.h llist.h
-	gcc -g -c path.c
+OBJS = build/llist.o build/path.o build/vector.o
 
-llist.o: llist.c llist.h
-	gcc -g -c llist.c
+all: deps main
 
-vector.o: vector.c
-	gcc -g -o vector.o vector.c
+$(OBJS): $(BUILD)/%.o: $(SRC)/%.c
+	$(CC) -c $< -o $@ -I $(INC)
 
-clean:
-	rm *.o
+main: $(OBJS)
+	$(CC) $(OBJS) -o main -I $(INC)
+
+deps: $(OBJS)
