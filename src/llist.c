@@ -14,7 +14,7 @@ int prepend(lnode **head, void *data)
 // USAGE: int a; prepend(&head, &a);
 // Insert a node at the beginning of a list. head will be changed.
 {
-	if (!*head) return 1;
+	if (!*head) return LLIST_INVALID_HEAD;
 	if (!data) fprintf(stderr, "Warning: null data pointer.");
 	lnode *add = malloc(LNODEP_SIZE);
 	lnode *nhead = *head;
@@ -23,14 +23,14 @@ int prepend(lnode **head, void *data)
 	nhead->next = add;
 	nhead->data = NULL;
 	*head = nhead;
-	return 0;
+	return LLIST_NO_ERR;
 }
 
 int append(lnode *head, void *data)
 // USAGE: int a; append(head, &a);
 // Insert a node at the tail of the linked list.
 {
-	if (!head) return 1;
+	if (!head) return LLIST_INVALID_HEAD;
 	if (!data) fprintf(stderr, "Warning: null data pointer.");
 	lnode *last = &(*head);
 	while(get_next(last, &last) == 0);
@@ -38,10 +38,23 @@ int append(lnode *head, void *data)
 	add->data = data;
 	add->next = NULL;
 	last->next = add;
-	return 0;
+	return LLIST_NO_ERR;
 }
 
-int delete_node(lnode *del)
+int insert(lnode *head, void *data)
+// USAGE: int a; insert(curr, &a);
+// Insert a node after the parameter node.
+{
+   if (head->next == NULL) return append(head, data);
+   lnode *add = malloc(LNODEP_SIZE);
+   lnode *next = head->next;
+   head->next = add;
+   add->next = next;
+   add->data = data;
+   return LLIST_NO_ERR;
+}
+
+void delete_node(lnode *del)
 {
 	free(del->data);
 	*del = *del->next;
@@ -49,10 +62,29 @@ int delete_node(lnode *del)
 
 int get_next(lnode *head, lnode **target)
 {
-	if (!head) return 1;
-	if (head->next == NULL) return 1;
+	if (!head) return LLIST_INVALID_HEAD;
+	if (head->next == NULL) return LLIST_LAST;
 	*target = head->next;
-	return 0;
+	return LLIST_NO_ERR;
+}
+
+int swap(lnode *sw1, lnode *sw2)
+{
+   if (sw1->data == NULL || sw2->data == NULL) return LLIST_EMPTY_NODE;
+   void *t_dat = sw1->data;
+   sw1->data = sw2->data;
+   sw2->data = t_dat;
+   return 0;
+}
+
+int get_index(lnode *head, int index, lnode **target)
+{
+   while(index > 0 && get_next(*target, target) == 0)
+   {
+      index--;
+   }
+
+   return index;   
 }
 
 /*
