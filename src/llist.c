@@ -8,7 +8,11 @@ const unsigned long int LNODEP_SIZE = sizeof(lnode*);
 void init_list(lnode **head)
 // USAGE: lnode *head; init_list(&head);
 // All new linked lists must be initialized with this function.
-{ *head = &NULLED; }
+{
+   *head = malloc(LNODEP_SIZE);
+   (*head)->data = NULL;
+   (*head)->next = NULL;
+}
 
 int prepend(lnode **head, void *data)
 // USAGE: int a; prepend(&head, &a);
@@ -34,10 +38,10 @@ int append(lnode *head, void *data)
 	if (!data) fprintf(stderr, "Warning: null data pointer.");
 	lnode *last = &(*head);
 	while(get_next(last, &last) == 0);
-	lnode *add = malloc(sizeof(lnode*));
+	lnode *add = malloc(sizeof(LNODEP_SIZE));
 	add->data = data;
-	add->next = NULL;
-	last->next = add;
+   add->next = NULL;
+	(*last).next = add;
 	return LLIST_NO_ERR;
 }
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "llist.h"
 
-#define ABS(x) x>0?x:-x
 #define MIN(x,y) x>y?y:x
 #define MAX(x,y) x<y?y:x
 #define MEDIAN(x,y,z) x>y?(y>z?y:z):(x>z?x:z)
@@ -27,15 +26,16 @@ struct node_info_t {
    short checked;
 };
 
+int int_abs(int a) { return (a>0)?a:-a; }
 int manhattan(node a, node b)
 {
-	return 2*(ABS(a.x-b.x) + ABS(a.y-b.y));
+	return 2*(int_abs((a.x-b.x)) + int_abs((a.y-b.y)));
 }
 
 int pythag(node a, node b)
 {
-	int dx = ABS(a.x - b.x);
-	int dy = ABS(a.y - b.y);
+	int dx = int_abs(a.x - b.x);
+	int dy = int_abs(a.y - b.y);
 	int total = 0;
 	while (dx > 0 || dy > 0)
 	{
@@ -57,6 +57,6 @@ int pythag(node a, node b)
 	}
 }
 
-int init_finder(int size_x, int size_y, int** world_board);
+int init_finder(int size_x, int size_y, int** world_board, int(*func)(node,node));
 int a_star(node *start, node *goal);
-int retrace(lnode* path, node_info** board, node *start, node *goal);
+int retrace(lnode **path, node_info** board, node *start, node *goal);
