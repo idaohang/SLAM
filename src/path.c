@@ -1,58 +1,56 @@
 #include <stdlib.h>
 #include "path.h"
 
-node_info** board;
-node* path;
-int (*score)(node,node);
+node** board;
+int (*score)(node*,node*);
 int size_x, size_y;
 const unsigned long int NODEP_SIZE = sizeof(node *);
 
-int init_finder(int sizex, int sizey, int** world_board, int(*func)(node,node))
+int init_finder(int sizex, int sizey, 
+      int** world_board, int(*func)(node*,node*))
 {
 	int i, j;
    size_x = sizex; size_y = sizey;
    score = func;
 
-	board = malloc(sizeof(node_info *) * size_x);
+	board = malloc(NODEP_SIZE * size_x);
    if(!board) return MEMORY_ERROR;
 	for (i = 0; i < size_y; i++)
 	{
-		board[i] = malloc(NODEP_SIZE * size_y);
+		board[i] = malloc(sizeof(node) * size_y);
+      if(!board[i]) return MEMORY_ERROR;
 		for (j = 0; j < size_y; j++)
 		{
-			node_info *sc = malloc(sizeof(node_info));
-         // Each f and g score starts at 0.
-			sc->g_score = 0;
-			sc->f_score = 0;
-			sc->val = world_board[i][j];
-         sc->checked = 0;
-			board[i][j] = *sc;
+         board[i][j].x = i;
+         board[i][j].y = j;
+         // Each f and g board[i][j]ore starts at 0.
+			board[i][j].g_score = 0;
+			board[i][j].f_score = 0;
+			board[i][j].val = world_board[i][j];
+         board[i][j].checked = 0;
 		}
 	}
-
-	path = malloc(NODEP_SIZE * size_x);
+	//path = malloc(sizeof * size_x);
    return PATH_NO_ERR;
 } 
 
-int retrace(lnode **path, node_info** board, node *start, node *goal)
+int retrace(lnode **path, node *start, node *goal)
 // Need to free path each time path is solved.
 {
 	int length = 0;
-//	node *sel = &board[goal->x][goal->y].from;
+	/*node *sel = goal->from;*/
    node *sel = goal;
    lnode *head;
    init_list(&head);
    // Depends on the same start passed to a_star
-	while (!(sel->x == start->x && sel->y == start->y))
+	while (sel != start)
 	{
 		length++;
-		node *link = malloc(NODEP_SIZE);
-		*link = *sel;
-		append(head,link);
-		sel = &board[sel->x][sel->y].from;
+		append(head,sel);
+		sel = sel->from;
 	}
    *path = head;
-	return length;
+   return length;
 }
 
 int greedy_add(lnode *head, node *add)
@@ -61,10 +59,9 @@ int greedy_add(lnode *head, node *add)
    lnode *next = head;
    do
    {
-      node tmp = *(node *)next->data;
-      if (tmp.x == add->x && tmp.y == add->y) return PATH_PROS_SKIP;
-      if(board[tmp.x][tmp.y].f_score >=
-            board[add->x][add->y].f_score)
+      node *tmp = (node *)next->data;
+      if (tmp == add) return PATH_PROS_SKIP;
+      if(tmp->f_score >= add->f_score)
          return insert(head, add);
       else
          head = next;
@@ -75,20 +72,18 @@ int greedy_add(lnode *head, node *add)
 
 int a_star(node *start, node *goal)
 {
-   lnode *pros;
-   init_list(&pros);
-   node *st = malloc(NODEP_SIZE);
-   st = &(*start);
-   append(pros, st);
+   lnode *pros_list;
+   init_list(&pros_list);
+   append(pros_list, start);
    // Main loop
-   while (get_next(pros, &pros) == 0)
+   while (get_next(pros_list, &pros_list) == 0)
    {
-      node *curr = (node *)pros->data;
+      node *curr = (node *)pros_list->data;
       int curr_x = curr->x, curr_y = curr->y;
       // Check if we are at the goal; return success if so.
       if (curr_x == goal->x && curr_y == goal->y) return PATH_NO_ERR;
       // Mark that we have checked this node.
-      board[curr_x][curr_y].checked = 1;
+      curr->checked = 1;
       // Consider all nodes surrounding curr.
       int ind, i, j;
       for (i = -1; i < 2; i++) {
@@ -97,20 +92,16 @@ int a_star(node *start, node *goal)
             if ( i == 0 && j == 0) continue;
             if (curr_x + i < 0 || curr_x + i >= size_x) continue;
             if (curr_y + j < 0 || curr_y + j >= size_y) continue;
-            node_info *pros_info = &board[curr_x+i][curr_y+j];
-            if (pros_info->val > 4) continue;
-            if (pros_info->checked == 1) continue;
-            // Update data concerning the node add.
-            node *add = malloc(NODEP_SIZE);
-            add->x = curr_x+i; add->y = curr_y+j;
-            pros_info->from = *curr;
+            // Since we are inside the board, pick the node.
+            node *pros = &board[curr_x+i][curr_y+j];
+            if (pros->val > 4) continue;
+            if (pros->checked == 1) continue;
             // Update g_score with difference between nodes.
-            pros_info->g_score = board[curr_x][curr_y].g_score +
-               score(*curr, *add);
+            pros->g_score = curr->g_score + score(curr, pros);
             // Update f_score; add cost of traversing upcoming terrain.
-            pros_info->f_score = board[curr_x+i][curr_y+j].val +
-               pros_info->g_score + score(*add, *goal);
-            greedy_add(pros, add);
+            pros->f_score = pros->val + pros->g_score + score(pros, goal);
+            pros->from = curr;
+            greedy_add(pros_list, pros);
          }
       }
    }
@@ -120,8 +111,8 @@ int a_star(node *start, node *goal)
 int main(void)
 {
 	int i, j;
-	int** brd = malloc(4*sizeof(int *));
-	for (i = 0; i < 4; i++)
+   int **brd = malloc(4*sizeof(int*));
+   for(i = 0; i < 4; i++)
 	{
 		brd[i] = malloc(4*sizeof(int));
 		for (j = 0; j < 4; j++)
@@ -131,15 +122,17 @@ int main(void)
    brd[3][2] = 3;
    brd[2][3] = 4;
 	init_finder(4,4,brd,&manhattan);
-   node start; start.x=0;start.y=0;
-   node goal; goal.x=3;goal.y=3;
-	int a = a_star(&start,&goal);
+	int a = a_star(&board[0][0],&board[3][3]);
    lnode *path;
-   int len = retrace(&path, board, &start, &goal);
+   int len = retrace(&path, &board[0][0], &board[3][3]);
+   get_next(path, &path);
+   node *curr = (node*) path->data;
+   printf("(%d,%d)",curr->x,curr->y);
    while (get_next(path, &path) == 0)
    {
-      node curr = *(node*) path->data;
-      printf("%d %d ->\t",curr.x, curr.y);
+      curr = (node*) path->data;
+      printf("->(%d,%d)",curr->x, curr->y);
    }
+   printf("\n");
    return a;
 }

@@ -38,10 +38,10 @@ int append(lnode *head, void *data)
 	if (!data) fprintf(stderr, "Warning: null data pointer.");
 	lnode *last = &(*head);
 	while(get_next(last, &last) == 0);
-	lnode *add = malloc(sizeof(LNODEP_SIZE));
+	lnode *add = malloc(LNODEP_SIZE);
 	add->data = data;
    add->next = NULL;
-	(*last).next = add;
+	last->next = add;
 	return LLIST_NO_ERR;
 }
 
@@ -67,7 +67,7 @@ void delete_node(lnode *del)
 int get_next(lnode *head, lnode **target)
 {
 	if (!head) return LLIST_INVALID_HEAD;
-	if (head->next == NULL) return LLIST_LAST;
+	if (!(head->next)) return LLIST_LAST;
 	*target = head->next;
 	return LLIST_NO_ERR;
 }
