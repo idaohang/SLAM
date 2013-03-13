@@ -1,4 +1,5 @@
 // slam.h
+#include "vector.h"
 #include "path.h"
 #include "llist.h"
 

@@ -2,7 +2,7 @@ SRC = ./src
 BUILD = ./build
 INC = ./inc
 
-CMD = $(CC) -m64
+CMD = $(CC) -m64 -W -Wall
 
 OBJS = build/slam.o build/path.o build/llist.o build/vector.o
 
@@ -22,6 +22,6 @@ $(OBJS): $(BUILD)/%.o: $(SRC)/%.c $(INC)/%.h
 	$(CMD) -g -c $< -o $@ -I $(INC)
 
 main: $(OBJS)
-	$(CMD) $(OBJS) -o main -I $(INC)
+	$(CMD) $(OBJS) -o main -I $(INC) -lm
 
 deps: $(OBJS)

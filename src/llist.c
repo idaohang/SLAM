@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "llist.h"
 
 const unsigned long int LNODEP_SIZE = sizeof(lnode*);
@@ -32,7 +31,8 @@ int prepend(lnode **head, void *data)
    // Insert a node at the beginning of a list. head will be changed.
 {
    if (!*head) return LLIST_INVALID_HEAD;
-   if (!data) fprintf(stderr, "Warning: null data pointer.");
+   if (!data && LLIST_ERR_LEVEL > 1)
+      fprintf(stderr, "Warning: null data pointer.");
    lnode *add = malloc(LNODEP_SIZE);
    if (!add) return LLIST_MALLOC_ERROR;
    lnode *nhead = *head;
@@ -49,7 +49,8 @@ int append(lnode *head, void *data)
    // Insert a node at the tail of the linked list.
 {
    if (!head) return LLIST_INVALID_HEAD;
-   if (!data) fprintf(stderr, "Warning: null data pointer.");
+   if (!data && LLIST_ERR_LEVEL > 1)
+      fprintf(stderr, "Warning: null data pointer.");
    lnode *last = &(*head);
    while(get_next(last, &last) == 0);
    lnode *add = malloc(LNODEP_SIZE);
@@ -65,6 +66,8 @@ int insert(lnode *head, void *data)
    // Insert a node after the parameter node.
 {
    if (!head->next) return append(head, data);
+   if (!data && LLIST_ERR_LEVEL > 1)
+      fprintf(stderr, "Warning: null data pointer.");
    lnode *add = malloc(LNODEP_SIZE);
    if(!add) return LLIST_MALLOC_ERROR;
    lnode *next = head->next;
@@ -90,56 +93,11 @@ int get_next(lnode *head, lnode **target)
 
 int swap(lnode *sw1, lnode *sw2)
 {
-   if (sw1->data == NULL || sw2->data == NULL) return LLIST_EMPTY_NODE;
+   if ((sw1->data == NULL || sw2->data == NULL) &&
+         LLIST_ERR_LEVEL > 1) fprintf(stderr, "Warning: null data pointer.");
    void *t_dat = sw1->data;
    sw1->data = sw2->data;
    sw2->data = t_dat;
    return 0;
 }
 
-int get_index(lnode *head, int index, lnode **target)
-{
-   while(index > 0 && get_next(*target, target) == 0)
-   {
-      index--;
-   }
-
-   return index;   
-}
-
-/*
-   int main(void)
-   {
-   int i, a = 50;
-
-   lnode *head;
-   init_list(&head);
-
-   for(i = 9; i >= 0; i--)
-   {
-   int* x = malloc(sizeof(int));
- *x = i;
- prepend(&head,x);
- }
-
- printf("%p\n",head);
-
- for(i = 0; i < 10; i++)
- {
- int*x = malloc(sizeof(int));
- *x = i;
- append(head,x);
- }
-
- lnode *curr = head;
- lnode *change = curr->next->next->next;
- change->data = &a;
- while(get_next(curr, &curr) == 0)
- {
- if (*(int*)curr->data == 6) delete_node(curr->next);
- if (*(int*)curr->data == 3) delete_node(curr);
- printf("%d %p\n", *(int*)curr->data, curr);
- }
- return 0;
- }
- */
