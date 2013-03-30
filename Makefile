@@ -4,7 +4,7 @@ INC = ./inc
 
 CMD = $(CC) -m64 -W -Wall
 
-OBJS = 
+OBJS = build/matrix.o
 
 all: deps main
 
