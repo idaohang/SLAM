@@ -1,8 +1,7 @@
 SRC = ./src
 BUILD = ./build
 INC = ./inc
-
-CMD = $(CC) -m64 -W -Wall
+CFLAGS=-g
 
 OBJS = build/matrix.o
 
@@ -19,9 +18,9 @@ DIR_GUARD = @mkdir -p $(@D)
 
 $(OBJS): $(BUILD)/%.o: $(SRC)/%.c $(INC)/%.h
 	$(DIR_GUARD)
-	$(CMD) -g -c $< -o $@ -I $(INC)
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(INC)
 
 main: $(OBJS)
-	$(CMD) $(OBJS) -o main -I $(INC) -lm
+	$(CC) $(CFLAGS) $(OBJS) -o main -I $(INC) -lm
 
 deps: $(OBJS)
